@@ -21,14 +21,16 @@ impl TextFileLoader {
 /// Currently supports UTF-8 encoded text files only.
 /// Invalid UTF-8 characters in source file error out.
 impl DocumentLoader for TextFileLoader {
-    fn load(&self) -> Result<Vec<Document>, LoaderError> {
+    type Metadata = HashMap<String, String>;
+
+    fn load(&self) -> Result<Vec<Document<'_, Self::Metadata>>, LoaderError> {
         let content = read_text_file(&self.path)?;
         let mut metadata = HashMap::new();
         metadata.insert("source_file".to_string(), self.path.clone());
 
         let doc = Document {
-            content: content.into(),
-            metadata,
+            page_content: content.into(),
+            metadata: Some(metadata),
         };
 
         Ok(vec![doc])

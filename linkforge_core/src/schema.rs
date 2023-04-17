@@ -1,29 +1,23 @@
-use std::collections::HashMap;
 use std::borrow::Cow;
 
 #[derive(Debug)]
-pub struct Document<'a> {
-    pub content: Cow<'a, str>,
-    pub metadata: HashMap<String, String>,
+pub struct Document<'a, M = EmptyMetadata> {
+    pub page_content: Cow<'a, str>,
+    pub metadata: Option<M>,
 }
 
-impl<'a> Document<'a> {
-    // pub fn new<T: Into<Cow<'a, str>>>(content: T) -> Self {
-    //     Document {
-    //         content: content.into(),
-    //         metadata: HashMap::new(),
-    //     }
-    // }
-
-    // pub fn content(&self) -> &str {
-    //     &self.content
-    // }
-
-    pub fn metadata(&self) -> &HashMap<String, String> {
-        &self.metadata
+impl<'a, M> Document<'a, M> {
+    pub fn new<T: Into<Cow<'a, str>>>(content: T) -> Self {
+        Document {
+            page_content: content.into(),
+            metadata: None,
+        }
     }
 
-    pub fn add_metadata(&mut self, key: String, value: String) {
-        self.metadata.insert(key, value);
+    pub fn metadata(&self) -> Option<&M> {
+        self.metadata.as_ref()
     }
 }
+
+#[derive(Debug)]
+pub struct EmptyMetadata;

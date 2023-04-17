@@ -12,7 +12,9 @@ pub enum LoaderError {
 }
 
 pub trait DocumentLoader {
-    fn load(&self) -> Result<Vec<Document>, LoaderError>;
+    type Metadata;
+
+    fn load(&self) -> Result<Vec<Document<'_, Self::Metadata>>, LoaderError>;
 
     // fn load_and_split(&self, text_splitter: Option<TextSplitter>) -> Vec<Document>;
 }
