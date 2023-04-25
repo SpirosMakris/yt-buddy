@@ -1,10 +1,11 @@
 use async_trait::async_trait;
+use llm_chain::schema::Document;
 use std::collections::HashMap;
 use std::fs::File;
 use std::io::Read;
 use std::path::Path;
 
-use crate::{Document, DocumentLoader, LoaderError};
+use crate::{DocumentLoader, LoaderError};
 
 pub struct TextFileLoader {
     pub path: String,
@@ -25,7 +26,7 @@ impl TextFileLoader {
 impl DocumentLoader for TextFileLoader {
     type Metadata = HashMap<String, String>;
 
-    async fn load(&self) -> Result<Vec<Document<'_, Self::Metadata>>, LoaderError> {
+    async fn load(&self) -> Result<Vec<Document<Self::Metadata>>, LoaderError> {
         let content = read_text_file(&self.path)?;
         let mut metadata = HashMap::new();
         metadata.insert("source_file".to_string(), self.path.clone());

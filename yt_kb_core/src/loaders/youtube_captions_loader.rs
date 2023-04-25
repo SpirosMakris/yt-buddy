@@ -1,8 +1,8 @@
-use crate::{Document, DocumentLoader, LoaderError};
+use crate::{DocumentLoader, LoaderError};
 use async_trait::async_trait;
+use llm_chain::schema::Document;
 use serde::Deserialize;
-use serde_json::{from_value, Value};
-use std::{collections::HashMap, hash::Hash};
+use std::collections::HashMap;
 use thiserror::Error;
 
 #[derive(Error, Debug)]
@@ -138,7 +138,7 @@ impl Transcript {
 impl DocumentLoader for YoutubeCaptionsLoader {
     type Metadata = HashMap<String, String>;
 
-    async fn load(&self) -> Result<Vec<Document<'_, Self::Metadata>>, LoaderError> {
+    async fn load(&self) -> Result<Vec<Document<Self::Metadata>>, LoaderError> {
         let consent_str = r#"action="https://consent.youtube.com/s""#;
 
         let html_str = self.fetch_html().await.map_err(|_e| {

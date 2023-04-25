@@ -1,14 +1,15 @@
 use std::borrow::Cow;
 
 #[derive(Debug)]
-pub struct Document<'a, M = EmptyMetadata> {
+#[deprecated(note = "Please use llm-chain::schema::Document for compatibility")]
+pub struct CowDocument<'a, M = EmptyMetadata> {
     pub page_content: Cow<'a, str>,
     pub metadata: Option<M>,
 }
 
-impl<'a, M> Document<'a, M> {
+impl<'a, M> CowDocument<'a, M> {
     pub fn new<T: Into<Cow<'a, str>>>(content: T) -> Self {
-        Document {
+        Self {
             page_content: content.into(),
             metadata: None,
         }
