@@ -1,4 +1,4 @@
 [workspace]
 members = [
-	"linkforge_core"
+	"yt_kb_core"
 ]
