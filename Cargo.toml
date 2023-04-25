@@ -1,4 +1,5 @@
 [workspace]
-members = [
-	"yt_kb_core"
-]
+members = ["yt_kb_core", "yt_kb"]
+
+[workspace.dependencies]
+tokio = { version = "1.27.0", features = ["macros", "rt-multi-thread"] }
