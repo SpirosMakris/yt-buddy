@@ -1,3 +1,4 @@
+use async_trait::async_trait;
 use std::collections::HashMap;
 use std::fs::File;
 use std::io::Read;
@@ -20,10 +21,11 @@ impl TextFileLoader {
 /// filename.
 /// Currently supports UTF-8 encoded text files only.
 /// Invalid UTF-8 characters in source file error out.
+#[async_trait]
 impl DocumentLoader for TextFileLoader {
     type Metadata = HashMap<String, String>;
 
-    fn load(&self) -> Result<Vec<Document<'_, Self::Metadata>>, LoaderError> {
+    async fn load(&self) -> Result<Vec<Document<'_, Self::Metadata>>, LoaderError> {
         let content = read_text_file(&self.path)?;
         let mut metadata = HashMap::new();
         metadata.insert("source_file".to_string(), self.path.clone());
@@ -45,3 +47,5 @@ fn read_text_file<P: AsRef<Path>>(path: P) -> Result<String, LoaderError> {
 
     Ok(content)
 }
+
+// @TODO: add some basic tests for TextFileLoader
