@@ -5,3 +5,4 @@ members = ["yt_kb_core", "yt_kb"]
 anyhow = "1.0"
 thiserror = "1.0"
 tokio = { version = "1.27.0", features = ["macros", "rt-multi-thread"] }
+async-trait = "0.1"
