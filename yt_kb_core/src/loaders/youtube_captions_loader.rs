@@ -165,7 +165,7 @@ impl DocumentLoader for YoutubeCaptionsLoader {
         // println!("5: {transcript:?}");
 
         Ok(vec![Document {
-            page_content: transcript_strs.join(" ").into(),
+            page_content: transcript_strs.join(" "),
             metadata: None,
         }])
     }
