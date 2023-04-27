@@ -1,21 +1,21 @@
 [package]
-name = "yt_kb_core"
+name = "yt_kb"
 version = "0.1.0"
 edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-roxmltree = "0.18.0"
-reqwest = "0.11.16"
-html-escape = "0.2.13"
-serde = { version = "1.0.160", features = ["derive"] }
+chrono = "0.4.24"
+serde = "1.0.160"
 serde_json = "1.0.96"
-rust-bert = "0.20.0"
+surrealdb = "1.0.0-beta.9"
+uuid = "1.3.1"
 
 tokio = { workspace = true, features = ["macros", "rt-multi-thread"] }
 anyhow = { workspace = true }
 thiserror = { workspace = true }
 async-trait = { workspace = true }
-
 llm-chain = { workspace = true }
+
+yt_kb_core = { path = "../yt_kb_core" }

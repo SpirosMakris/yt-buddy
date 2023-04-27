@@ -32,7 +32,7 @@ impl DocumentLoader for TextFileLoader {
         metadata.insert("source_file".to_string(), self.path.clone());
 
         let doc = Document {
-            page_content: content.into(),
+            page_content: content,
             metadata: Some(metadata),
         };
 

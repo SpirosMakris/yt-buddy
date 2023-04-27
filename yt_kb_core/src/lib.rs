@@ -1,8 +1,8 @@
+mod embeddings;
 mod loaders;
-mod schema;
 
+pub use embeddings::*;
 pub use loaders::*;
-pub use schema::*;
 
 #[cfg(test)]
 mod tests {}
