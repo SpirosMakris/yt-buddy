@@ -16,5 +16,6 @@ tokio = { workspace = true, features = ["macros", "rt-multi-thread"] }
 anyhow = { workspace = true }
 thiserror = { workspace = true }
 async-trait = { workspace = true }
+llm-chain = { workspace = true }
 
 yt_kb_core = { path = "../yt_kb_core" }
