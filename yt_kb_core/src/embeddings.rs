@@ -45,6 +45,10 @@ impl RSBertEmbeddings {
             model: Mutex::new(model),
         })
     }
+
+    pub fn get_model(&self) -> &Mutex<SentenceEmbeddingsModel> {
+        &self.model
+    }
 }
 
 #[async_trait]
