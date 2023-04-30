@@ -37,15 +37,11 @@ impl YoutubeCaptionsLoader {
 
         let result = html.split(captions_separator).skip(1).collect::<String>();
 
-        // println!("1: {result}");
-
         let result = result
             .split(video_details_separator)
             .next()
             .unwrap()
             .to_string();
-
-        // println!("2: {result}");
 
         let value: serde_json::Value = serde_json::from_str(&result).unwrap();
         // println!("3: {deserialized:?}");
@@ -126,7 +122,6 @@ impl Transcript {
 
         for node in nodes {
             let text = html_escape::decode_html_entities(node.text().unwrap());
-
             transcript.push(text.into());
         }
 
@@ -156,13 +151,9 @@ impl DocumentLoader for YoutubeCaptionsLoader {
         let caps = self.extract_captions_json(html_str).await.unwrap();
         let transcripts = Transcript::from_captions_list(caps, self.video_id.clone())?;
 
-        println!("4: {transcripts:?}");
-
         let transcript = transcripts.get(0).unwrap();
 
         let transcript_strs = transcript.fetch().await.unwrap();
-
-        // println!("5: {transcript:?}");
 
         Ok(vec![Document {
             page_content: transcript_strs.join(" "),
