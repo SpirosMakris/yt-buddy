@@ -1,5 +1,5 @@
 [workspace]
-members = ["yt_kb_core", "yt_kb"]
+members = ["yt_buddy_core", "yt_buddy"]
 
 [workspace.dependencies]
 anyhow = "1.0"

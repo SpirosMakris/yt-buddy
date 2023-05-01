@@ -1,14 +1,14 @@
 use std::sync::Arc;
 
 use async_trait::async_trait;
+use llm_chain::schema::EmptyMetadata;
 use llm_chain::tokens::TokenizerError;
-use llm_chain::traits::{VectorStore, VectorStoreError};
+use llm_chain::traits::VectorStore;
 use llm_chain::vectorstores::qdrant::Qdrant;
 use llm_chain::TextSplitter;
-use llm_chain::{schema::EmptyMetadata, traits::Embeddings};
 
 use qdrant_client::qdrant::{CreateCollection, Distance, VectorParams, VectorsConfig};
-use yt_kb_core::{
+use yt_buddy_core::{
     DocumentLoader, LoaderError, RSBertEmbeddings, RSBertError, RsBertTextSplitter,
     YoutubeCaptionsLoader,
 };

@@ -1,5 +1,5 @@
 [package]
-name = "yt_kb"
+name = "yt_buddy"
 version = "0.1.0"
 edition = "2021"
 
@@ -19,4 +19,4 @@ thiserror = { workspace = true }
 async-trait = { workspace = true }
 llm-chain = { workspace = true }
 
-yt_kb_core = { path = "../yt_kb_core" }
+yt_buddy_core = { path = "../yt_buddy_core" }

@@ -4,7 +4,7 @@ use serde_json::json;
 use surrealdb::sql::Thing;
 use surrealdb::{engine::remote::ws::Ws, opt::auth::Root, Surreal};
 
-use yt_kb_core::{DocumentLoader, YoutubeCaptionsLoader};
+use yt_buddy_core::{DocumentLoader, YoutubeCaptionsLoader};
 
 #[derive(Debug, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
@@ -49,7 +49,7 @@ async fn main() -> surrealdb::Result<()> {
     .await?;
 
     // Select a specific namespace/db
-    db.use_ns("test").use_db("yt_kb_db").await?;
+    db.use_ns("test").use_db("yt_buddy_db").await?;
 
     let video_id = "IqqHqDcXLww";
 
