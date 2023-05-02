@@ -20,3 +20,4 @@ thiserror = { workspace = true }
 async-trait = { workspace = true }
 
 llm-chain = { workspace = true }
+qdrant-client = { workspace = true }
