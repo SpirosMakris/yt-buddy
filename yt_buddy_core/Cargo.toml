@@ -21,3 +21,4 @@ async-trait = { workspace = true }
 
 llm-chain = { workspace = true }
 qdrant-client = { workspace = true }
+iter_tools = "0.1.4"

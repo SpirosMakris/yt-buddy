@@ -3,6 +3,10 @@ use std::sync::Mutex;
 use llm_chain::{tokens::Tokenizer, TextSplitter};
 use rust_bert::pipelines::sentence_embeddings::SentenceEmbeddingsModel;
 
+use iter_tools::Itertools;
+
+const MAX_SEQ_LENGTH: usize = 128;
+
 pub struct RsBertTextSplitter<'a> {
     model: &'a Mutex<SentenceEmbeddingsModel>,
 }
@@ -17,15 +21,40 @@ type TokenType = i64;
 
 impl Tokenizer<TokenType> for RsBertTextSplitter<'_> {
     fn tokenize_str(&self, doc: &str) -> Result<Vec<TokenType>, llm_chain::tokens::TokenizerError> {
-        let tokenized = self
+        println!("===> {}", doc.len());
+
+        // Get tokenizer
+        let model = self
             .model
             .lock()
-            .map_err(|e| llm_chain::tokens::TokenizerError::TokenizerCreationError)?
-            .tokenize(&[doc])
-            .tokens_ids
+            .map_err(|_e| llm_chain::tokens::TokenizerError::TokenizerCreationError)?;
+
+        // The tokenizer has a max_seq_lenqth property. It truncates after the limit so we
+        // split the text into and tokenize each chunk seperately.
+        let chunked_doc = doc
+            .split_whitespace()
+            .chunks(MAX_SEQ_LENGTH)
             .into_iter()
-            .map(|t| t.int64_value(&[]))
-            .collect();
+            .map(|c| c.into_iter().join(" "))
+            .collect::<Vec<String>>();
+
+        let mut tokenized: Vec<TokenType> = vec![];
+
+        for chunk in chunked_doc.iter() {
+            let tokenized_chunk = model
+                .tokenize(&[chunk])
+                .tokens_ids
+                .into_iter()
+                .flat_map(|t| {
+                    let vec: Vec<i64> = t.into();
+                    vec.into_iter()
+                });
+
+            tokenized.extend(tokenized_chunk);
+        }
+
+        println!("Tokenized: {tokenized:?}");
+        println!("Tokenized length: {}", tokenized.len());
 
         Ok(tokenized)
     }
