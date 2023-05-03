@@ -2,4 +2,4 @@
 /Cargo.lock
 /db
 /qdrant_storage
-/resources
+**/resources
