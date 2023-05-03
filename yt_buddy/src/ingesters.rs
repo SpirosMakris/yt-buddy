@@ -13,7 +13,7 @@ use yt_buddy_core::{
     YoutubeCaptionsLoader,
 };
 
-use qdrant_client::prelude::{QdrantClient, QdrantClientConfig};
+use qdrant_client::prelude::QdrantClient;
 
 use crate::traits::Ingester;
 
@@ -36,7 +36,7 @@ pub enum YoutubeCaptionsIngesterError {
 pub struct YoutubeCaptionsIngester {
     video_id: String,
     collection_name: String,
-    client: Arc<QdrantClient>,
+    qdrant_client: Arc<QdrantClient>,
     vector_store: Qdrant<RSBertEmbeddings, YTIngestMetadata>,
     embeddings_size: u64,
 }
@@ -44,16 +44,10 @@ pub struct YoutubeCaptionsIngester {
 impl YoutubeCaptionsIngester {
     pub async fn new(
         video_id: String,
-        qdrant_config: QdrantClientConfig,
+        qdrant_client: Arc<QdrantClient>,
         collection_name: String,
         embeddings: RSBertEmbeddings,
     ) -> Result<Self, YoutubeCaptionsIngesterError> {
-        let client = Arc::new(
-            QdrantClient::new(Some(qdrant_config))
-                .await
-                .map_err(|e| YoutubeCaptionsIngesterError::VectorStoreError(e.to_string()))?,
-        );
-
         // Encode a single dummy entry to get embeddings length
         // We need this for initializing the Qdrant collection if
         // it doesn't exist.
@@ -72,7 +66,7 @@ impl YoutubeCaptionsIngester {
         debug_assert_eq!(384, embeddings_size);
 
         let qdrant: Qdrant<RSBertEmbeddings, YTIngestMetadata> = Qdrant::new(
-            client.clone(),
+            qdrant_client.clone(),
             collection_name.clone(),
             embeddings,
             None,
@@ -81,7 +75,7 @@ impl YoutubeCaptionsIngester {
 
         Ok(Self {
             video_id,
-            client,
+            qdrant_client,
             collection_name,
             vector_store: qdrant,
             embeddings_size,
@@ -90,7 +84,7 @@ impl YoutubeCaptionsIngester {
 
     pub async fn ensure_collection(&self) -> Result<(), YoutubeCaptionsIngesterError> {
         if !self
-            .client
+            .qdrant_client
             .has_collection(self.collection_name.clone())
             .await
             .map_err(|e| {
@@ -100,7 +94,7 @@ impl YoutubeCaptionsIngester {
             })?
         {
             // Create the collection
-            self.client
+            self.qdrant_client
                 .create_collection(&CreateCollection {
                     collection_name: self.collection_name.clone(),
                     vectors_config: Some(VectorsConfig {
