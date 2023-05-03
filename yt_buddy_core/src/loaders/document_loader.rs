@@ -2,9 +2,8 @@ use async_trait::async_trait;
 use std::io;
 
 pub use llm_chain::schema::Document;
-use thiserror::Error;
 
-#[derive(Error, Debug)]
+#[derive(thiserror::Error, Debug)]
 pub enum LoaderError {
     #[error("IO error: {0}")]
     IoError(#[from] io::Error),

@@ -30,8 +30,8 @@ pub struct RSBertEmbeddings {
 
 impl RSBertEmbeddings {
     pub fn new() -> Result<Self, RSBertError> {
-        let model = SentenceEmbeddingsBuilder::remote(SentenceEmbeddingsModelType::AllMiniLmL12V2)
-            .create_model()?;
+        let model =
+            SentenceEmbeddingsBuilder::local("resources/all-MiniLM-L12-v2").create_model()?;
 
         Ok(Self {
             model: Mutex::new(model),
@@ -39,7 +39,8 @@ impl RSBertEmbeddings {
     }
 
     pub fn from_model(model_type: SentenceEmbeddingsModelType) -> Result<Self, RSBertError> {
-        let model = SentenceEmbeddingsBuilder::remote(model_type).create_model()?;
+        let model =
+            SentenceEmbeddingsBuilder::local("resources/all-MiniLM-L12-v2").create_model()?;
 
         Ok(Self {
             model: Mutex::new(model),
