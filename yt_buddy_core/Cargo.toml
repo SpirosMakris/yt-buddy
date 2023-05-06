@@ -9,8 +9,7 @@ edition = "2021"
 roxmltree = "0.18.0"
 reqwest = "0.11.16"
 html-escape = "0.2.13"
-serde = { version = "1.0.160", features = ["derive"] }
-serde_json = "1.0.96"
+
 rust-bert = { git = "https://github.com/guillaume-be/rust-bert.git", branch = "master" }
 tch = "0.11.0"
 iter_tools = "0.1.4"
@@ -22,4 +21,8 @@ thiserror = { workspace = true }
 async-trait = { workspace = true }
 
 llm-chain = { workspace = true }
+llm-chain-qdrant = { workspace = true }
 qdrant-client = { workspace = true }
+
+serde = { workspace = true, features = ["derive"] }
+serde_json = { wokspace = true }

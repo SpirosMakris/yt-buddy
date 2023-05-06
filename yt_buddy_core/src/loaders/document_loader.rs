@@ -14,10 +14,11 @@ pub enum LoaderError {
 }
 
 #[async_trait]
-pub trait DocumentLoader {
-    type Metadata;
-
-    async fn load(&self) -> Result<Vec<Document<Self::Metadata>>, LoaderError>;
+pub trait DocumentLoader<Metadata>
+where
+    Metadata: serde::Serialize + serde::de::DeserializeOwned,
+{
+    async fn load(&self) -> Result<Vec<Document<Metadata>>, LoaderError>;
 
     // fn load_and_split(&self, text_splitter: Option<TextSplitter>) -> Vec<Document>;
 }

@@ -8,7 +8,10 @@ pub enum RetrieverError {
 }
 
 #[async_trait]
-pub trait Retriever<M> {
+pub trait Retriever<M>
+where
+    M: serde::Serialize + serde::de::DeserializeOwned + Send + Sync,
+{
     async fn get_relevant_documents(
         &self,
         query: &str,

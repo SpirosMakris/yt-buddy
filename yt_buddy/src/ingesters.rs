@@ -4,8 +4,8 @@ use async_trait::async_trait;
 use llm_chain::schema::EmptyMetadata;
 use llm_chain::tokens::TokenizerError;
 use llm_chain::traits::VectorStore;
-use llm_chain::vectorstores::qdrant::Qdrant;
 use llm_chain::TextSplitter;
+use llm_chain_qdrant::Qdrant;
 
 use qdrant_client::qdrant::{CreateCollection, Distance, VectorParams, VectorsConfig};
 use yt_buddy_core::{

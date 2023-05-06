@@ -1,14 +1,20 @@
 use async_trait::async_trait;
 use llm_chain::traits::VectorStore;
-use llm_chain::{schema::Document, traits::Embeddings, vectorstores::qdrant::Qdrant};
+use llm_chain::{schema::Document, traits::Embeddings};
+use llm_chain_qdrant::Qdrant;
 use qdrant_client::qdrant::Value;
+use serde::de::DeserializeOwned;
+use serde::Serialize;
 
 use std::convert::TryFrom;
 use std::marker::{Send, Sync};
 
 use crate::{Retriever, RetrieverError};
 
-pub trait QdrantMetadata: TryFrom<Value> + Into<Value> + Send + Sync {}
+pub trait QdrantMetadata:
+    TryFrom<Value> + Into<Value> + Send + Sync + Serialize + DeserializeOwned
+{
+}
 
 pub struct VectorStoreRetriever<E, M>
 where

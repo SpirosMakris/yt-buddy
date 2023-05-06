@@ -11,7 +11,7 @@ pub struct RsBertTextSplitter {
     model: Arc<Mutex<SentenceEmbeddingsModel>>,
 }
 
-impl<'a> RsBertTextSplitter {
+impl RsBertTextSplitter {
     pub fn new(model: Arc<Mutex<SentenceEmbeddingsModel>>) -> Self {
         Self { model }
     }

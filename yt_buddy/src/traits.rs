@@ -3,11 +3,14 @@ use llm_chain::{
     schema::EmptyMetadata,
     traits::{Embeddings, VectorStore},
 };
+use serde::{de::DeserializeOwned, Serialize};
 
 #[async_trait]
 pub trait Ingester<M = EmptyMetadata> {
     type Embeddings: Embeddings;
-    type VecStore: VectorStore<Self::Embeddings, M>;
+    type VecStore: VectorStore<Self::Embeddings, M>
+    where
+        M: Serialize + DeserializeOwned;
 
     type Error;
 

@@ -4,8 +4,7 @@ use async_trait::async_trait;
 use llm_chain::traits;
 use rust_bert::{
     pipelines::sentence_embeddings::{
-        layers::PoolingConfig, SentenceEmbeddingsBuilder, SentenceEmbeddingsConfig,
-        SentenceEmbeddingsModel, SentenceEmbeddingsModelType,
+        SentenceEmbeddingsBuilder, SentenceEmbeddingsModel, SentenceEmbeddingsModelType,
     },
     RustBertError,
 };

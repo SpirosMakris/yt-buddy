@@ -1,6 +1,6 @@
 use std::sync::Arc;
 
-use llm_chain::vectorstores::qdrant::Qdrant;
+use llm_chain_qdrant::Qdrant;
 use qdrant_client::prelude::{QdrantClient, QdrantClientConfig};
 use yt_buddy::{Ingester, YTIngestMetadata, YoutubeCaptionsIngester};
 use yt_buddy_core::RSBertEmbeddings;

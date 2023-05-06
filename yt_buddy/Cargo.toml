@@ -12,6 +12,9 @@ anyhow = { workspace = true }
 thiserror = { workspace = true }
 async-trait = { workspace = true }
 llm-chain = { workspace = true }
+llm-chain-qdrant = { workspace = true }
 qdrant-client = { workspace = true }
+serde = { workspace = true, features = ["derive"] }
+serde_json = { wokspace = true }
 
 yt_buddy_core = { path = "../yt_buddy_core" }

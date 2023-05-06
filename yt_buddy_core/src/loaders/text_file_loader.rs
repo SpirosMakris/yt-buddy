@@ -1,6 +1,5 @@
 use async_trait::async_trait;
-use llm_chain::schema::Document;
-use std::collections::HashMap;
+use llm_chain::schema::{Document, EmptyMetadata};
 use std::fs::File;
 use std::io::Read;
 use std::path::Path;
@@ -17,23 +16,27 @@ impl TextFileLoader {
     }
 }
 
+// type TextFileLoaderMetadata = EmptyMetadata;
+
+// fn deserialize_metadata(json_str: &str) -> JsonResult<TextFileLoaderMetadata> {
+//     serde_json::from_str(json_str)
+// }
+
 /// This is a DocumentLoader implementation for simple text
 /// files. Metadata added is the file source path and the
 /// filename.
 /// Currently supports UTF-8 encoded text files only.
 /// Invalid UTF-8 characters in source file error out.
 #[async_trait]
-impl DocumentLoader for TextFileLoader {
-    type Metadata = HashMap<String, String>;
-
-    async fn load(&self) -> Result<Vec<Document<Self::Metadata>>, LoaderError> {
+impl DocumentLoader<EmptyMetadata> for TextFileLoader {
+    async fn load(&self) -> Result<Vec<Document<EmptyMetadata>>, LoaderError> {
         let content = read_text_file(&self.path)?;
-        let mut metadata = HashMap::new();
-        metadata.insert("source_file".to_string(), self.path.clone());
+        // let mut metadata = HashMap::new();
+        // metadata.insert("source_file".to_string(), self.path.clone());
 
         let doc = Document {
             page_content: content,
-            metadata: Some(metadata),
+            metadata: None,
         };
 
         Ok(vec![doc])
