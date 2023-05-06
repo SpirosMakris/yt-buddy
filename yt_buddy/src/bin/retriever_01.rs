@@ -1,9 +1,10 @@
 use std::sync::Arc;
 
+use llm_chain::traits::VectorStore;
 use llm_chain_qdrant::Qdrant;
 use qdrant_client::prelude::{QdrantClient, QdrantClientConfig};
 use yt_buddy::{Ingester, YTIngestMetadata, YoutubeCaptionsIngester};
-use yt_buddy_core::RSBertEmbeddings;
+use yt_buddy_core::{RSBertEmbeddings, VectorStoreRetriever};
 
 #[tokio::main(flavor = "current_thread")]
 async fn main() {
@@ -40,21 +41,31 @@ async fn main() {
         None,
     ));
 
-    let blocking_ingester_task = tokio::task::spawn_blocking(move || {
-        YoutubeCaptionsIngester::new(
-            video_id.to_string(),
-            client.clone(),
-            qdrant_vs.clone(),
-            collection_name.to_string(),
-            embeddings_size,
-        )
-    });
+    // let blocking_ingester_task = tokio::task::spawn_blocking(move || {
+    //     YoutubeCaptionsIngester::new(
+    //         video_id.to_string(),
+    //         client.clone(),
+    //         qdrant_vs.clone(),
+    //         collection_name.to_string(),
+    //         embeddings_size,
+    //     )
+    // });
 
-    let ingester = blocking_ingester_task
-        .await
-        .expect("Failed to run ingester creation async task")
-        .await
-        .expect("Failed to create Youtube Ingester");
+    // let ingester = blocking_ingester_task
+    //     .await
+    //     .expect("Failed to run ingester creation async task")
+    //     .await
+    //     .expect("Failed to create Youtube Ingester");
+
+    let ingester = YoutubeCaptionsIngester::new(
+        video_id.to_string(),
+        client.clone(),
+        qdrant_vs.clone(),
+        collection_name.to_string(),
+        embeddings_size,
+    )
+    .await
+    .expect("Faield to create ingester");
 
     dbg!("Creating current example collection if not exists..");
     ingester
@@ -70,5 +81,11 @@ async fn main() {
         .expect("Failed to ingest: {video_id}");
 
     dbg!("Querying data..");
-    // let response = ingester.
+    let res = qdrant_vs
+        .clone()
+        .similarity_search("language models".to_string(), 2)
+        .await
+        .expect("Failed to do similarity search");
+
+    dbg!(res);
 }

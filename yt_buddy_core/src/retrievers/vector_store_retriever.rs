@@ -24,6 +24,14 @@ where
     vector_store: Qdrant<E, M>,
 }
 
+impl<E, M> VectorStoreRetriever<E, M>
+where
+    E: Embeddings + Send + Sync,
+    M: QdrantMetadata,
+{
+    // @TODO: impl new() ?
+}
+
 #[async_trait]
 impl<E: Embeddings + Send + Sync, M: QdrantMetadata> Retriever<M> for VectorStoreRetriever<E, M> {
     async fn get_relevant_documents(
