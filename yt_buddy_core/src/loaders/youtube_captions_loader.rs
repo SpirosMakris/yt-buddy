@@ -1,6 +1,6 @@
 use crate::{DocumentLoader, LoaderError};
 use async_trait::async_trait;
-use llm_chain::schema::{Document, EmptyMetadata};
+use llm_chain::schema::Document;
 use serde::Deserialize;
 
 use thiserror::Error;
@@ -129,11 +129,11 @@ impl Transcript {
     }
 }
 
-// type YoutubeCaptionsLoaderMetadata = EmptyMetadata;
+type YoutubeCaptionsLoaderMetadata = Vec<(String, String)>;
 
 #[async_trait]
-impl DocumentLoader<EmptyMetadata> for YoutubeCaptionsLoader {
-    async fn load(&self) -> Result<Vec<Document<EmptyMetadata>>, LoaderError> {
+impl DocumentLoader<YoutubeCaptionsLoaderMetadata> for YoutubeCaptionsLoader {
+    async fn load(&self) -> Result<Vec<Document<YoutubeCaptionsLoaderMetadata>>, LoaderError> {
         let consent_str = r#"action="https://consent.youtube.com/s""#;
 
         let html_str = self.fetch_html().await.map_err(|_e| {
@@ -155,9 +155,25 @@ impl DocumentLoader<EmptyMetadata> for YoutubeCaptionsLoader {
 
         let transcript_strs = transcript.fetch().await.unwrap();
 
+        let metadata = vec![
+            ("video_id".to_string(), transcript.video_id.clone()),
+            (
+                "language_code".to_string(),
+                transcript.language_code.clone(),
+            ),
+            (
+                "translation_langs".to_string(),
+                transcript.translation_langs.join(","),
+            ),
+            (
+                "is_generated".to_string(),
+                transcript.is_generated.to_string(),
+            ),
+        ];
+
         Ok(vec![Document {
             page_content: transcript_strs.join(" "),
-            metadata: None,
+            metadata: Some(metadata),
         }])
     }
 }
