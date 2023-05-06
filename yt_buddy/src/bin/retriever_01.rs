@@ -4,7 +4,7 @@ use llm_chain::traits::VectorStore;
 use llm_chain_qdrant::Qdrant;
 use qdrant_client::prelude::{QdrantClient, QdrantClientConfig};
 use yt_buddy::{Ingester, YTIngestMetadata, YoutubeCaptionsIngester};
-use yt_buddy_core::{RSBertEmbeddings, VectorStoreRetriever};
+use yt_buddy_core::RSBertEmbeddings;
 
 #[tokio::main(flavor = "current_thread")]
 async fn main() {
@@ -41,6 +41,7 @@ async fn main() {
         None,
     ));
 
+    // Only needed when using remote model
     // let blocking_ingester_task = tokio::task::spawn_blocking(move || {
     //     YoutubeCaptionsIngester::new(
     //         video_id.to_string(),

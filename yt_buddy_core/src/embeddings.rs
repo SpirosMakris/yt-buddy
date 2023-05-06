@@ -1,4 +1,7 @@
-use std::sync::{Arc, Mutex};
+use std::{
+    num::TryFromIntError,
+    sync::{Arc, Mutex},
+};
 
 use async_trait::async_trait;
 use llm_chain::traits;
@@ -38,6 +41,8 @@ impl RSBertEmbeddings {
 
         let embeddings_size = Self::init_embeddings_size(&model)?;
 
+        debug_assert_eq!(384, embeddings_size);
+
         Ok(Self {
             model: Arc::new(Mutex::new(model)),
             embeddings_size,
@@ -65,19 +70,10 @@ impl RSBertEmbeddings {
     }
 
     fn init_embeddings_size(model: &SentenceEmbeddingsModel) -> Result<u64, RSBertError> {
-        // Encode a single dummy entry to get embeddings length
-        // We need this for initializing the Qdrant collection if
-        // it doesn't exist.
-        Ok(model
-            // .lock()
-            // .map_err(|e| RSBertError::MutexPoisonError(e.to_string()))?
-            .encode(&["dummy val"])
-            .map_err(|e| RSBertError::ModelError(e.to_string()))?
-            .get(0)
-            .ok_or(RSBertError::ModelError(
-                "Unable to fetch encoding. This may indicate problems with the model".to_string(),
-            ))?
-            .len() as u64)
+        model
+            .get_embedding_dim()?
+            .try_into()
+            .map_err(|e: TryFromIntError| RSBertError::ModelError(e.to_string()))
     }
 }
 

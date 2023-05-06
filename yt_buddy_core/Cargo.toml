@@ -10,7 +10,7 @@ roxmltree = "0.18.0"
 reqwest = "0.11.16"
 html-escape = "0.2.13"
 
-rust-bert = { git = "https://github.com/guillaume-be/rust-bert.git", branch = "master" }
+rust-bert = { git = "https://github.com/guillaume-be/rust-bert.git", branch = "sentence_embeddings_dim" }
 tch = "0.11.0"
 iter_tools = "0.1.4"
 pdf-extract = "0.6.5"
