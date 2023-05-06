@@ -1,7 +1,8 @@
 use std::sync::Arc;
 
+use llm_chain::vectorstores::qdrant::Qdrant;
 use qdrant_client::prelude::{QdrantClient, QdrantClientConfig};
-use yt_buddy::{Ingester, YoutubeCaptionsIngester};
+use yt_buddy::{Ingester, YTIngestMetadata, YoutubeCaptionsIngester};
 use yt_buddy_core::RSBertEmbeddings;
 
 #[tokio::main(flavor = "current_thread")]
@@ -16,7 +17,7 @@ async fn main() {
             .expect("Failed to create client"),
     );
 
-    let collection_name = "retriever_01";
+    let collection_name = "retriever_01".to_string();
 
     dbg!("Creating Rs Bert Embeddings..");
     let embeddings = RSBertEmbeddings::new().expect("Failed to create RSBertEmbeddings");
@@ -28,12 +29,24 @@ async fn main() {
     let collections_list = client.list_collections().await.unwrap();
     dbg!(collections_list);
 
+    let embeddings_size = embeddings.get_embeddings_size();
+
+    dbg!("Creating VectorStore..");
+    let qdrant_vs: Arc<Qdrant<RSBertEmbeddings, YTIngestMetadata>> = Arc::new(Qdrant::new(
+        client.clone(),
+        collection_name.clone(),
+        embeddings,
+        None,
+        None,
+    ));
+
     let blocking_ingester_task = tokio::task::spawn_blocking(move || {
         YoutubeCaptionsIngester::new(
             video_id.to_string(),
             client.clone(),
+            qdrant_vs.clone(),
             collection_name.to_string(),
-            embeddings,
+            embeddings_size,
         )
     });
 
@@ -55,4 +68,7 @@ async fn main() {
         .ingest()
         .await
         .expect("Failed to ingest: {video_id}");
+
+    dbg!("Querying data..");
+    // let response = ingester.
 }

@@ -17,7 +17,7 @@ use qdrant_client::prelude::QdrantClient;
 
 use crate::traits::Ingester;
 
-type YTIngestMetadata = EmptyMetadata;
+pub type YTIngestMetadata = EmptyMetadata;
 
 #[derive(Debug, thiserror::Error)]
 pub enum YoutubeCaptionsIngesterError {
@@ -37,7 +37,7 @@ pub struct YoutubeCaptionsIngester {
     video_id: String,
     collection_name: String,
     qdrant_client: Arc<QdrantClient>,
-    vector_store: Qdrant<RSBertEmbeddings, YTIngestMetadata>,
+    vector_store: Arc<Qdrant<RSBertEmbeddings, YTIngestMetadata>>,
     embeddings_size: u64,
 }
 
@@ -45,39 +45,15 @@ impl YoutubeCaptionsIngester {
     pub async fn new(
         video_id: String,
         qdrant_client: Arc<QdrantClient>,
+        vector_store: Arc<Qdrant<RSBertEmbeddings, YTIngestMetadata>>,
         collection_name: String,
-        embeddings: RSBertEmbeddings,
+        embeddings_size: u64,
     ) -> Result<Self, YoutubeCaptionsIngesterError> {
-        // Encode a single dummy entry to get embeddings length
-        // We need this for initializing the Qdrant collection if
-        // it doesn't exist.
-        let embeddings_size = embeddings
-            .get_model()
-            .lock()
-            .map_err(|e| YoutubeCaptionsIngesterError::ModelError(e.to_string()))?
-            .encode(&["dummy val"])
-            .map_err(|e| YoutubeCaptionsIngesterError::ModelError(e.to_string()))?
-            .get(0)
-            .ok_or(YoutubeCaptionsIngesterError::ModelError(
-                "Unable to fetch encoding. This may indicate problems with the model".to_string(),
-            ))?
-            .len() as u64;
-
-        debug_assert_eq!(384, embeddings_size);
-
-        let qdrant: Qdrant<RSBertEmbeddings, YTIngestMetadata> = Qdrant::new(
-            qdrant_client.clone(),
-            collection_name.clone(),
-            embeddings,
-            None,
-            None,
-        );
-
         Ok(Self {
             video_id,
             qdrant_client,
             collection_name,
-            vector_store: qdrant,
+            vector_store,
             embeddings_size,
         })
     }
@@ -140,12 +116,6 @@ impl Ingester for YoutubeCaptionsIngester {
         let split_texts = splitter.split_text(&docs.get(0).unwrap().page_content, 384, 16)?;
 
         dbg!(&split_texts);
-
-        // Embedding create for each document
-        // let embedded_texts = embeddings.embed_texts(split_texts).await?;
-
-        // dbg!(&embedded_texts);
-        // dbg!("num embedded texts: ", &embedded_texts.len());
 
         // Add to vectorstore
         let doc_ids = self

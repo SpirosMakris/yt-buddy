@@ -1,4 +1,4 @@
-use std::sync::Mutex;
+use std::sync::{Arc, Mutex};
 
 use llm_chain::{tokens::Tokenizer, TextSplitter};
 use rust_bert::pipelines::sentence_embeddings::SentenceEmbeddingsModel;
@@ -7,22 +7,20 @@ use iter_tools::Itertools;
 
 const MAX_SEQ_LENGTH: usize = 128;
 
-pub struct RsBertTextSplitter<'a> {
-    model: &'a Mutex<SentenceEmbeddingsModel>,
+pub struct RsBertTextSplitter {
+    model: Arc<Mutex<SentenceEmbeddingsModel>>,
 }
 
-impl<'a> RsBertTextSplitter<'a> {
-    pub fn new(model: &'a Mutex<SentenceEmbeddingsModel>) -> Self {
+impl<'a> RsBertTextSplitter {
+    pub fn new(model: Arc<Mutex<SentenceEmbeddingsModel>>) -> Self {
         Self { model }
     }
 }
 
 type TokenType = i64;
 
-impl Tokenizer<TokenType> for RsBertTextSplitter<'_> {
+impl Tokenizer<TokenType> for RsBertTextSplitter {
     fn tokenize_str(&self, doc: &str) -> Result<Vec<TokenType>, llm_chain::tokens::TokenizerError> {
-        println!("===> {}", doc.len());
-
         // Get tokenizer
         let model = self
             .model
@@ -77,4 +75,4 @@ impl Tokenizer<TokenType> for RsBertTextSplitter<'_> {
     }
 }
 
-impl TextSplitter<TokenType> for RsBertTextSplitter<'_> {}
+impl TextSplitter<TokenType> for RsBertTextSplitter {}
