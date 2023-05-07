@@ -6,9 +6,7 @@ use std::{
 use async_trait::async_trait;
 use llm_chain::traits;
 use rust_bert::{
-    pipelines::sentence_embeddings::{
-        SentenceEmbeddingsBuilder, SentenceEmbeddingsModel, SentenceEmbeddingsModelType,
-    },
+    pipelines::sentence_embeddings::{SentenceEmbeddingsBuilder, SentenceEmbeddingsModel},
     RustBertError,
 };
 
@@ -49,9 +47,9 @@ impl RSBertEmbeddings {
         })
     }
 
-    pub fn from_model(model_type: SentenceEmbeddingsModelType) -> Result<Self, RSBertError> {
-        let model =
-            SentenceEmbeddingsBuilder::local("resources/all-MiniLM-L12-v2").create_model()?;
+    pub fn from_local_model(model_folder: &str) -> Result<Self, RSBertError> {
+        let local_folder_path = format!("resources/{}", model_folder);
+        let model = SentenceEmbeddingsBuilder::local(local_folder_path).create_model()?;
 
         let embeddings_size = Self::init_embeddings_size(&model)?;
 

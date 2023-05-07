@@ -1,5 +1,5 @@
 [workspace]
-members = ["yt_buddy_core", "yt_buddy"]
+members = ["yt_buddy_core", "yt_buddy", "sm_llm_loaders"]
 
 [workspace.dependencies]
 anyhow = "1.0"

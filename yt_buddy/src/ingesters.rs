@@ -8,9 +8,10 @@ use llm_chain::TextSplitter;
 use llm_chain_qdrant::Qdrant;
 
 use qdrant_client::qdrant::{CreateCollection, Distance, VectorParams, VectorsConfig};
-use yt_buddy_core::{
-    Document, DocumentLoader, LoaderError, RSBertEmbeddings, RSBertError, RsBertTextSplitter,
-    YoutubeCaptionsLoader, YoutubeCaptionsLoaderMetadata,
+use yt_buddy_core::{RSBertEmbeddings, RSBertError, RsBertTextSplitter};
+
+use sm_llm_loaders::{
+    Document, DocumentLoader, LoaderError, YoutubeCaptionsLoader, YoutubeCaptionsLoaderMetadata,
 };
 
 use qdrant_client::prelude::QdrantClient;
