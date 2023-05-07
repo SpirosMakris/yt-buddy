@@ -53,8 +53,6 @@ impl YoutubeCaptionsLoader {
         let captions_list: CaptionsList =
             serde_json::from_value(value["playerCaptionsTracklistRenderer"].clone()).unwrap();
 
-        println!("3: {captions_list:?}");
-
         Ok(captions_list)
     }
 
@@ -70,7 +68,7 @@ struct CaptionsList {
     translation_languages: Option<Vec<TranslationLanguage>>,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Clone)]
 #[serde(rename_all = "camelCase")]
 struct TranslationLanguage {
     language_code: String,
@@ -91,7 +89,8 @@ struct Transcript {
     url: String,
     language_code: String,
     is_generated: bool,
-    translation_langs: Vec<String>,
+    is_translatable: bool,
+    translation_langs: Option<Vec<TranslationLanguage>>,
 }
 
 impl Transcript {
@@ -105,7 +104,8 @@ impl Transcript {
                 .map(|t| Transcript {
                     video_id: video_id.clone(),
                     language_code: t.language_code.clone(),
-                    translation_langs: vec![], // @TODO: add translation langs here
+                    translation_langs: captions_list.translation_languages.clone(),
+                    is_translatable: t.is_translatable,
                     is_generated: t.kind == "asr",
                     url: t.base_url.clone(),
                 })
@@ -159,6 +159,14 @@ impl DocumentLoader<YoutubeCaptionsLoaderMetadata> for YoutubeCaptionsLoader {
         let transcript = transcripts.get(0).unwrap();
 
         let transcript_strs = transcript.fetch().await.unwrap();
+        let translation_langs = match &transcript.translation_langs {
+            Some(langs) => langs
+                .iter()
+                .map(|l| l.language_code.clone())
+                .collect::<Vec<String>>()
+                .join("|"),
+            None => String::from(""),
+        };
 
         let metadata = vec![
             ("video_id".to_string(), transcript.video_id.clone()),
@@ -166,13 +174,14 @@ impl DocumentLoader<YoutubeCaptionsLoaderMetadata> for YoutubeCaptionsLoader {
                 "language_code".to_string(),
                 transcript.language_code.clone(),
             ),
-            (
-                "translation_langs".to_string(),
-                transcript.translation_langs.join(","),
-            ),
+            ("translation_langs".to_string(), translation_langs),
             (
                 "is_generated".to_string(),
                 transcript.is_generated.to_string(),
+            ),
+            (
+                "is_translatable".to_string(),
+                transcript.is_translatable.to_string(),
             ),
         ];
 
