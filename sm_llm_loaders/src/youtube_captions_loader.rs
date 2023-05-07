@@ -3,12 +3,14 @@ use async_trait::async_trait;
 use llm_chain::schema::Document;
 use serde::Deserialize;
 
-use thiserror::Error;
-
-#[derive(Error, Debug)]
+#[derive(thiserror::Error, Debug)]
 pub enum YoutubeCaptionsLoaderError {
     #[error("Generic error")]
     GeneralError,
+    #[error("Reqwest error: {0}")]
+    FetchHtmlError(reqwest::Error),
+    #[error("Captions JSON extract error")]
+    ExtractCaptionsJsonError,
 }
 
 pub struct YoutubeCaptionsLoader {
@@ -35,16 +37,19 @@ impl YoutubeCaptionsLoader {
         let captions_separator = r#""captions":"#;
         let video_details_separator = r#","videoDetails"#;
 
-        let result = html.split(captions_separator).skip(1).collect::<String>();
+        let result = html
+            .split_once(captions_separator)
+            .ok_or(YoutubeCaptionsLoaderError::ExtractCaptionsJsonError)?
+            .1;
 
         let result = result
-            .split(video_details_separator)
-            .next()
-            .unwrap()
+            .split_once(video_details_separator)
+            .ok_or(YoutubeCaptionsLoaderError::ExtractCaptionsJsonError)?
+            .0
             .to_string();
 
         let value: serde_json::Value = serde_json::from_str(&result).unwrap();
-        // println!("3: {deserialized:?}");
+
         let captions_list: CaptionsList =
             serde_json::from_value(value["playerCaptionsTracklistRenderer"].clone()).unwrap();
 
