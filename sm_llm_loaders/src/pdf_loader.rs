@@ -4,11 +4,11 @@ use async_trait::async_trait;
 
 use crate::{Document, DocumentLoader, LoaderError};
 
-pub struct PdfFileLoader {
+pub struct NaivePdfFileLoader {
     pub path: PathBuf,
 }
 
-impl PdfFileLoader {
+impl NaivePdfFileLoader {
     pub fn new<T: Into<PathBuf>>(path: T) -> Self {
         Self { path: path.into() }
     }
@@ -17,7 +17,7 @@ impl PdfFileLoader {
 type PdfFileLoaderMetadata = Vec<(String, String)>;
 
 #[async_trait]
-impl DocumentLoader<PdfFileLoaderMetadata> for PdfFileLoader {
+impl DocumentLoader<PdfFileLoaderMetadata> for NaivePdfFileLoader {
     async fn load(&self) -> Result<Vec<Document<PdfFileLoaderMetadata>>, LoaderError> {
         let bytes = std::fs::read(self.path.clone())?;
         let content = pdf_extract::extract_text_from_mem(&bytes)
