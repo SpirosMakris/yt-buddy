@@ -3,6 +3,7 @@ use llm_chain::{
     schema::EmptyMetadata,
     traits::{Embeddings, VectorStore},
 };
+
 use serde::{de::DeserializeOwned, Serialize};
 
 #[async_trait]

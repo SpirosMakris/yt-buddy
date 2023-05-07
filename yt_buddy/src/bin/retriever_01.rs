@@ -66,7 +66,13 @@ async fn main() {
         embeddings_size,
     )
     .await
-    .expect("Faield to create ingester");
+    .expect("Failed to create ingester");
+
+    dbg!("Delete collection if exists..");
+    client
+        .delete_collection(collection_name.clone())
+        .await
+        .unwrap();
 
     dbg!("Creating current example collection if not exists..");
     ingester
@@ -75,7 +81,6 @@ async fn main() {
         .expect("Failed to ensure collection exists");
 
     dbg!("Ingesting..: {video_id}");
-
     ingester
         .ingest()
         .await
@@ -84,7 +89,7 @@ async fn main() {
     dbg!("Querying data..");
     let res = qdrant_vs
         .clone()
-        .similarity_search("language models".to_string(), 2)
+        .similarity_search("pdf".to_string(), 10)
         .await
         .expect("Failed to do similarity search");
 

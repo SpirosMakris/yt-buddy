@@ -1,7 +1,7 @@
 use std::sync::Arc;
 
 use async_trait::async_trait;
-use llm_chain::schema::EmptyMetadata;
+
 use llm_chain::tokens::TokenizerError;
 use llm_chain::traits::VectorStore;
 use llm_chain::TextSplitter;
@@ -9,15 +9,15 @@ use llm_chain_qdrant::Qdrant;
 
 use qdrant_client::qdrant::{CreateCollection, Distance, VectorParams, VectorsConfig};
 use yt_buddy_core::{
-    DocumentLoader, LoaderError, RSBertEmbeddings, RSBertError, RsBertTextSplitter,
-    YoutubeCaptionsLoader,
+    Document, DocumentLoader, LoaderError, RSBertEmbeddings, RSBertError, RsBertTextSplitter,
+    YoutubeCaptionsLoader, YoutubeCaptionsLoaderMetadata,
 };
 
 use qdrant_client::prelude::QdrantClient;
 
 use crate::traits::Ingester;
 
-pub type YTIngestMetadata = EmptyMetadata;
+pub type YTIngestMetadata = YoutubeCaptionsLoaderMetadata;
 
 #[derive(Debug, thiserror::Error)]
 pub enum YoutubeCaptionsIngesterError {
@@ -98,7 +98,7 @@ impl YoutubeCaptionsIngester {
 }
 
 #[async_trait]
-impl Ingester for YoutubeCaptionsIngester {
+impl Ingester<YTIngestMetadata> for YoutubeCaptionsIngester {
     type Embeddings = RSBertEmbeddings;
     type VecStore = Qdrant<Self::Embeddings, YTIngestMetadata>;
     type Error = YoutubeCaptionsIngesterError;
@@ -108,19 +108,42 @@ impl Ingester for YoutubeCaptionsIngester {
         let loader = YoutubeCaptionsLoader::new(self.video_id.clone());
         let docs = loader.load().await?;
 
+        let first_doc =
+            docs.get(0)
+                .ok_or(Self::Error::LoaderError(LoaderError::SourceReadError(
+                    "No documents retrieved".to_string(),
+                )))?;
+        let metadata = first_doc.metadata.clone();
+
         // Split text into documents
         // Creating the embeddings first will give access to the model
         let embeddings = RSBertEmbeddings::new().expect("Failed to create RsBertEmbeddings");
 
         let splitter = RsBertTextSplitter::new(embeddings.get_model());
-        let split_texts = splitter.split_text(&docs.get(0).unwrap().page_content, 384, 16)?;
+        // let split_texts = splitter.split_text(&docs.get(0).unwrap().page_content, 384, 16)?;
 
-        dbg!(&split_texts);
+        let embeddings_size: usize = self.embeddings_size.try_into().map_err(|e| {
+            YoutubeCaptionsIngesterError::ModelError(format!(
+                "Failed to convert embeddings size to usize: {e:?}"
+            ))
+        })?;
+
+        let split_docs = splitter
+            .split_text(&docs.get(0).unwrap().page_content, embeddings_size, 16)?
+            .into_iter()
+            .map(|t| Document {
+                page_content: t,
+                metadata: metadata.clone(),
+            })
+            .collect::<Vec<Document<_>>>();
+
+        dbg!(&split_docs);
 
         // Add to vectorstore
         let doc_ids = self
             .vector_store
-            .add_texts(split_texts)
+            // .add_texts(split_texts)
+            .add_documents(split_docs)
             .await
             .map_err(|e| {
                 YoutubeCaptionsIngesterError::VectorStoreError(format!(

@@ -129,7 +129,7 @@ impl Transcript {
     }
 }
 
-type YoutubeCaptionsLoaderMetadata = Vec<(String, String)>;
+pub type YoutubeCaptionsLoaderMetadata = Vec<(String, String)>;
 
 #[async_trait]
 impl DocumentLoader<YoutubeCaptionsLoaderMetadata> for YoutubeCaptionsLoader {
