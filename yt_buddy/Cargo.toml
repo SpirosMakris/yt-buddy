@@ -18,3 +18,4 @@ serde = { workspace = true, features = ["derive"] }
 serde_json = { workspace = true }
 
 yt_buddy_core = { path = "../yt_buddy_core" }
+sm_llm_loaders = { path = "../sm_llm_loaders" }

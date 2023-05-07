@@ -1,0 +1,25 @@
+[package]
+name = "sm_llm_loaders"
+version = "0.1.0"
+edition = "2021"
+description = "Loaders to get text data from various sources"
+license = "Apache-2.0"
+keywords = ["llm", "loaders", "text", "data"]
+categories = ["text-processing", "data-processing", "machine-learning"]
+
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+roxmltree = "0.18.0"
+reqwest = "0.11.16"
+html-escape = "0.2.13"
+pdf-extract = "0.6.5"
+
+anyhow = { workspace = true }
+thiserror = { workspace = true }
+async-trait = { workspace = true }
+tokio = { workspace = true, features = ["macros", "rt-multi-thread"] }
+llm-chain = { workspace = true }
+serde = { workspace = true, features = ["derive"] }
+serde_json = { workspace = true }
