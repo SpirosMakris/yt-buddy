@@ -7,4 +7,5 @@ edition = "2021"
 
 [dependencies]
 dioxus = "0.3.2"
+dioxus-router = "0.3.0"
 dioxus-web = "0.3.1"

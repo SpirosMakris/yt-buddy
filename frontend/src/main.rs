@@ -1,3 +1,6 @@
+use frontend::app;
+
 fn main() {
-    println!("Hello, world!");
+    // launch the web app
+    dioxus_web::launch(app);
 }
