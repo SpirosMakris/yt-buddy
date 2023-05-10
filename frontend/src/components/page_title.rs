@@ -4,7 +4,7 @@ use dioxus::prelude::*;
 pub fn PageTitle(cx: Scope, title: String, subtitle: String) -> Element {
     cx.render(rsx! {
       div {
-        class: "flex flex-col items-center justify-start h-screen",
+        class: "flex flex-col items-center justify-start my-4",
         div {
           class: "flex flex-col items-center justify-center",
           h1 {

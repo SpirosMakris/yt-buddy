@@ -1,12 +1,17 @@
 use dioxus::prelude::*;
 
-use crate::PageTitle;
+use crate::{IngestInput, PageTitle};
 
 pub fn IngestPage(cx: Scope) -> Element {
     cx.render(rsx! {
-      PageTitle {
-        title: "Ingest".to_string(),
-        subtitle: "Add your videos to the vector store".to_string()
+      div {
+        class: "container mx-auto px-4 py-4",
+        PageTitle {
+          title: "Ingest".to_string(),
+          subtitle: "Add your videos to the vector store".to_string()
+        },
+        IngestInput {}
+
       }
     })
 }
