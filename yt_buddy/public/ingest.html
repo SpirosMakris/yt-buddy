@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en" x-data="ingestVideo()">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ingest YouTube Video</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+  <script>
+    function ingestVideo() {
+      return {
+        videoUrl: '',
+        async submitVideo() {
+          const response = await fetch('api/v1/ingest', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ url: this.videoUrl }),
+          });
+
+          if (response.ok) {
+            alert('Video ingested successfully!');
+          } else {
+            alert('Failed to ingest video.');
+          }
+        },
+      };
+    }
+  </script>
+</head>
+
+<body>
+  <div class="container mx-auto p-4">
+    <!-- Navigation Bar -->
+    <header x-data="{ open: false }" class="bg-white shadow-sm">
+      <nav class="container mx-auto px-4">
+        <div class="flex items-center justify-between py-4">
+          <div class="text-2xl font-semibold">Logo</div>
+          <div class="md:hidden">
+            <button @click="open = !open" class="text-gray-500">
+              <svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                viewBox="0 0 24 24" class="w-6 h-6">
+                <path d="M4 6h16M4 12h16M4 18h16"></path>
+              </svg>
+            </button>
+          </div>
+          <div class="hidden md:flex">
+            <a href="ingest" class="text-gray-700 mx-4">Ingest</a>
+            <a href="search" class="text-gray-700 mx-4">Search</a>
+          </div>
+        </div>
+        <div :class="{ 'block': open, 'hidden': !open }" class="md:hidden">
+          <a href="ingest" class="block text-gray-700 px-4 py-2">Ingest</a>
+          <a href="search" class="block text-gray-700 px-4 py-2">Search</a>
+        </div>
+      </nav>
+    </header>
+    <!-- End of Navigation Bar -->
+
+    <h1 class="text-2xl font-semibold mb-4">Ingest YouTube Video</h1>
+    <div>
+      <label for="video-url" class="block text-sm font-medium text-gray-700">Video URL:</label>
+      <input x-model="videoUrl" type="text" id="video-url" name="video-url"
+        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+        required>
+      <button @click="submitVideo" class="mt-4 px-4 py-2 bg-blue-600 text-white rounded-md">Submit</button>
+    </div>
+  </div>
+</body>
+
+</html>

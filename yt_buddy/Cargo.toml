@@ -19,3 +19,7 @@ serde_json = { workspace = true }
 
 yt_buddy_core = { path = "../yt_buddy_core" }
 sm_llm_loaders = { path = "../sm_llm_loaders" }
+salvo = { git = "https://github.com/salvo-rs/salvo.git", features = [
+  "serve-static",
+  "compression",
+] }
