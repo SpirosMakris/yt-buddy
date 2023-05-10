@@ -23,3 +23,5 @@ salvo = { git = "https://github.com/salvo-rs/salvo.git", features = [
   "serve-static",
   "compression",
 ] }
+axum = "0.6"
+httpc-test = "0.1.2"
