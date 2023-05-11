@@ -2,17 +2,26 @@ use std::net::SocketAddr;
 
 use axum::{
     extract::{Path, Query},
-    response::{Html, IntoResponse},
+    middleware,
+    response::{Html, IntoResponse, Response},
     routing::{get, get_service},
     Router,
 };
 use serde::Deserialize;
 use tower_http::services::ServeDir;
 
+// Re-export error
+pub use self::error::{Error, Result};
+
+mod error;
+mod web;
+
 #[tokio::main]
 async fn main() {
     let routes_all = Router::new()
         .merge(routes_hello())
+        .merge(web::routes_login::routes())
+        .layer(middleware::map_response(main_response_mapper))
         .fallback_service(routes_static());
 
     // region: axum::Server
@@ -23,6 +32,14 @@ async fn main() {
         .await
         .unwrap();
     // endregion: axum::Server
+}
+
+async fn main_response_mapper(res: Response) -> Response {
+    println!("->> {:<12} - main_response_mapper", "RES_MAPPER");
+
+    println!();
+
+    res
 }
 
 fn routes_static() -> Router {
