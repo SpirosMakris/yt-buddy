@@ -16,10 +16,13 @@ async fn quick_dev() -> Result<()> {
         "/api/login",
         json!({
           "username": "demo",
-          "pwd": "demo1",
+          "pwd": "demo",
         }),
     );
     req_login.await?.print().await?;
+
+    // Just to test that login cookie persists
+    hc.do_get("/hello2/Spiros").await?.print().await?;
 
     Ok(())
 }
