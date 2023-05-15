@@ -19,10 +19,14 @@ mod model;
 mod web;
 
 #[tokio::main]
-async fn main() {
+async fn main() -> Result<()> {
+    // Initialize ModelController
+    let mc = model::ModelController::new().await?;
+
     let routes_all = Router::new()
         .merge(routes_hello())
         .merge(web::routes_login::routes())
+        .nest("/api", web::routes_ingest_entries::routes(mc.clone()))
         .layer(middleware::map_response(main_response_mapper))
         .layer(CookieManagerLayer::new())
         .fallback_service(routes_static());
@@ -35,6 +39,8 @@ async fn main() {
         .await
         .unwrap();
     // endregion: axum::Server
+
+    Ok(())
 }
 
 async fn main_response_mapper(res: Response) -> Response {
