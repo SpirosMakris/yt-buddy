@@ -14,6 +14,7 @@ use tower_http::services::ServeDir;
 // Re-export error
 pub use self::error::{Error, Result};
 
+mod ctx;
 mod error;
 mod model;
 mod web;
