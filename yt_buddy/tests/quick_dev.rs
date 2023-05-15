@@ -35,7 +35,7 @@ async fn quick_dev() -> Result<()> {
 
     hc.do_get("/api/ingest").await?.print().await?;
 
-    hc.do_delete("/api/ingest/0").await?.print().await?;
+    hc.do_delete("/api/ingest/1").await?.print().await?;
 
     hc.do_get("/api/ingest").await?.print().await?;
 
