@@ -11,6 +11,7 @@ pub enum Error {
 
     // -- Auth Error
     AuthFailedNoAuthTokenCookie,
+    AuthFailTokenWrongFormat,
 
     // -- Model errors (@TODO: refactor into model layer)
     IngestEntryDeleteFailIdNotFound { id: u64 },

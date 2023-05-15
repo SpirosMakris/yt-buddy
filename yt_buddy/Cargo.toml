@@ -27,3 +27,4 @@ axum = { version = "0.6", features = ["macros"] }
 httpc-test = "0.1.2"
 tower-http = { version = "0.4.0", features = ["fs"] }
 tower-cookies = "0.9.0"
+lazy-regex = "2.5.0"
