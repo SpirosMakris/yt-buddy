@@ -4,7 +4,7 @@
 //! Goal: Flesh out the CRUD API. Later we can change the implementation
 //! and the model store to get it actually working.
 
-use crate::{Error, Result};
+use crate::{ctx::Ctx, Error, Result};
 use serde::{Deserialize, Serialize};
 use std::sync::{Arc, Mutex};
 
@@ -12,6 +12,7 @@ use std::sync::{Arc, Mutex};
 #[derive(Clone, Debug, Serialize)]
 pub struct IngestEntry {
     pub id: u64,
+    pub cid: u64, // Creator user_id
     pub video_id: String,
 }
 
@@ -42,6 +43,7 @@ impl ModelController {
 impl ModelController {
     pub async fn create_ingest_entry(
         &self,
+        ctx: Ctx,
         ingest_entry_fc: IngestEntryForCreate,
     ) -> Result<IngestEntry> {
         let mut store = self.ingest_entries.lock().unwrap();
@@ -49,6 +51,7 @@ impl ModelController {
         let id = store.len() as u64 + 1;
         let ingest_entry = IngestEntry {
             id,
+            cid: ctx.user_id(),
             video_id: ingest_entry_fc.video_id,
         };
 
@@ -57,7 +60,7 @@ impl ModelController {
         Ok(ingest_entry)
     }
 
-    pub async fn list_ingest_entries(&self) -> Result<Vec<IngestEntry>> {
+    pub async fn list_ingest_entries(&self, _ctx: Ctx) -> Result<Vec<IngestEntry>> {
         let store = self.ingest_entries.lock().unwrap();
 
         // Filter maps clones the options and filters out the Nones
@@ -69,7 +72,7 @@ impl ModelController {
         Ok(ingest_entries)
     }
 
-    pub async fn delete_ingest_entry(&self, id: u64) -> Result<IngestEntry> {
+    pub async fn delete_ingest_entry(&self, _ctx: Ctx, id: u64) -> Result<IngestEntry> {
         let mut store = self.ingest_entries.lock().unwrap();
 
         let ingest_entry = store.get_mut(id as usize).and_then(|t| t.take());

@@ -4,8 +4,11 @@ use axum::{
     Json, Router,
 };
 
-use crate::model::{IngestEntry, IngestEntryForCreate, ModelController};
 use crate::Result;
+use crate::{
+    ctx::Ctx,
+    model::{IngestEntry, IngestEntryForCreate, ModelController},
+};
 
 #[derive(Clone, FromRef)]
 struct AppState {
@@ -27,30 +30,35 @@ pub fn routes(mc: ModelController) -> Router {
 // region:    --- REST handlers
 async fn create_ingest_entry(
     State(mc): State<ModelController>,
+    ctx: Ctx,
     Json(ingest_entry_fc): Json<IngestEntryForCreate>,
 ) -> Result<Json<IngestEntry>> {
     println!("->> {:<12} - create_ingest_entry", "HANDLER");
 
-    let entry = mc.create_ingest_entry(ingest_entry_fc).await?;
+    let entry = mc.create_ingest_entry(ctx, ingest_entry_fc).await?;
 
     Ok(Json(entry))
 }
 
-async fn list_ingest_entries(State(mc): State<ModelController>) -> Result<Json<Vec<IngestEntry>>> {
+async fn list_ingest_entries(
+    State(mc): State<ModelController>,
+    ctx: Ctx,
+) -> Result<Json<Vec<IngestEntry>>> {
     println!("->> {:<12} - list_ingest_entries", "HANDLER");
 
-    let entries = mc.list_ingest_entries().await?;
+    let entries = mc.list_ingest_entries(ctx).await?;
 
     Ok(Json(entries))
 }
 
 async fn delete_ingest_entry(
     State(mc): State<ModelController>,
+    ctx: Ctx,
     Path(id): Path<u64>,
 ) -> Result<Json<IngestEntry>> {
     println!("->> {:<12} - delete_ingest_entry - {id}", "HANDLER");
 
-    let entry = mc.delete_ingest_entry(id).await?;
+    let entry = mc.delete_ingest_entry(ctx, id).await?;
 
     Ok(Json(entry))
 }
