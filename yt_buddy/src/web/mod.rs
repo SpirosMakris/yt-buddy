@@ -1,3 +1,4 @@
+pub mod mw_auth;
 pub mod routes_ingest_entries;
 pub mod routes_login;
 

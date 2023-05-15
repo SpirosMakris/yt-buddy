@@ -23,10 +23,14 @@ async fn main() -> Result<()> {
     // Initialize ModelController
     let mc = model::ModelController::new().await?;
 
+    // Route layer applies middleware only to specific router
+    let routes_api = web::routes_ingest_entries::routes(mc.clone())
+        .route_layer(middleware::from_fn(web::mw_auth::mw_require_auth));
+
     let routes_all = Router::new()
         .merge(routes_hello())
         .merge(web::routes_login::routes())
-        .nest("/api", web::routes_ingest_entries::routes(mc.clone()))
+        .nest("/api", routes_api)
         .layer(middleware::map_response(main_response_mapper))
         .layer(CookieManagerLayer::new())
         .fallback_service(routes_static());
